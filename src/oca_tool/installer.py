@@ -72,7 +72,7 @@ def install(name: str) -> None:
         skills_link = dot_opencode / "skills"
         if skills_link.exists() or skills_link.is_symlink():
             skills_link.unlink()
-        skills_link.symlink_to(".opencode/.agents/skills/", target_is_directory=True)
+        skills_link.symlink_to(".agents/skills/", target_is_directory=True)
     except OSError as e:
         print(f"创建符号链接失败: {e}", file=sys.stderr)
         sys.exit(1)
