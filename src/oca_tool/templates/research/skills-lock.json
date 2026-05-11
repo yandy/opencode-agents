@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "mmx-cli": {
+      "source": "MiniMax-AI/cli",
+      "sourceType": "github",
+      "skillPath": "skill/SKILL.md",
+      "computedHash": "ddba6bad18218e660d929430421fb3bdd2e81d972585f0fd222cecbc2a78e48b"
+    }
+  }
+}
