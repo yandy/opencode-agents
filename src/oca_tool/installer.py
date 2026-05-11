@@ -62,12 +62,12 @@ def install(name: str) -> None:
         pyproject_path = target / "pyproject.toml"
         if pyproject_path.exists() or pyproject_path.is_symlink():
             pyproject_path.unlink()
-        pyproject_path.symlink_to(".opencode/pyproject.toml")
+        pyproject_path.symlink_to(".opencode/agent-pyproject.toml")
 
         package_json = target / "package.json"
         if package_json.exists() or package_json.is_symlink():
             package_json.unlink()
-        package_json.symlink_to(".opencode/jsproject.json")
+        package_json.symlink_to(".opencode/agent-package.json")
 
         skills_link = dot_opencode / "skills"
         if skills_link.exists() or skills_link.is_symlink():

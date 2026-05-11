@@ -95,8 +95,8 @@ class TestInstallIntegration:
 
                 assert dot_opencode.is_dir()
                 assert (dot_opencode / "opencode.json").is_file()
-                assert (dot_opencode / "pyproject.toml").is_file()
-                assert (dot_opencode / "jsproject.json").is_file()
+                assert (dot_opencode / "agent-pyproject.toml").is_file()
+                assert (dot_opencode / "agent-package.json").is_file()
                 assert (dot_opencode / "system-deps.conf").is_file()
                 assert (dot_opencode / "skills-lock.json").is_file()
                 assert (dot_opencode / "agents").is_dir()
