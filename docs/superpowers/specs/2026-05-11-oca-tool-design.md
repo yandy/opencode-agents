@@ -29,6 +29,7 @@ opencode-agents/
 │           │   ├── opencode.json
 │           │   ├── pyproject.toml
 │           │   ├── jsproject.json
+│           │   ├── system-deps.txt      # 系统级依赖包名列表
 │           │   ├── agents/
 │           │   │   └── .gitkeep
 │           │   ├── .agents/
@@ -39,6 +40,7 @@ opencode-agents/
 │           │   ├── opencode.json
 │           │   ├── pyproject.toml
 │           │   ├── jsproject.json
+│           │   ├── system-deps.txt
 │           │   ├── agents/
 │           │   │   └── web-search.md
 │           │   ├── .agents/
@@ -49,6 +51,7 @@ opencode-agents/
 │               ├── opencode.json
 │               ├── pyproject.toml
 │               ├── jsproject.json
+│               ├── system-deps.txt
 │               ├── agents/
 │               │   └── .gitkeep
 │               ├── .agents/
@@ -78,6 +81,19 @@ opencode-agents/
   - `.opencode/skills -> .opencode/.agents/skills/`
 - `prompt_install_deps()`: 询问是否运行 `uv sync` 和 `bun install`
 - `install_deps()`: 执行 `uv sync` 和 `bun install`
+- `print_system_deps()`: 读取 `.opencode/system-deps.txt`，按 apt/dnf/pacman 格式输出安装提示
+
+#### `system-deps.txt`
+每个模板目录下包含一个 `system-deps.txt` 文件，每行一个系统包名。install 完成后，installer 读取此文件并向用户输出多行安装提示：
+
+```
+根据你的系统运行对应命令安装系统依赖:
+  apt-get install <pkg1> <pkg2> ...
+  dnf install <pkg1> <pkg2> ...
+  pacman -Sy <pkg1> <pkg2> ...
+```
+
+若文件为空或不存在则跳过此步骤。
 
 ### Install Flow
 
@@ -95,9 +111,12 @@ oca-tool install <agent-name>
   │     ├─ ln -s .opencode/pyproject.toml pyproject.toml
   │     ├─ ln -s .opencode/jsproject.json package.json
   │     └─ ln -s .opencode/.agents/skills .opencode/skills
-  └─ 5. prompt_install_deps() ?
-        ├─ yes → install_deps() (uv sync, bun install)
-        └─ no → done
+  ├─ 5. prompt_install_deps() ?
+  │     ├─ yes → install_deps() (uv sync, bun install)
+  │     └─ no → skip
+  └─ 6. print_system_deps()
+        └─ 读取 .opencode/system-deps.txt，输出各包管理器安装命令
+```
 ```
 
 ### Preset Templates
@@ -106,6 +125,7 @@ oca-tool install <agent-name>
 - 文档处理 agent 环境
 - Python 依赖: markitdown, openpyxl, pandas, pdf2image, pdfplumber, pillow, pytesseract, pypdf, reportlab
 - JS 依赖: docx, pdf-lib, pptxgenjs
+- 系统依赖: qpdf (system-deps.txt 中列出)
 - 不含 web-search agent
 - Python >= 3.12
 
@@ -113,6 +133,7 @@ oca-tool install <agent-name>
 - 搜索研究 agent 环境
 - Python 依赖: 同 office
 - JS 依赖: 同 office
+- 系统依赖: qpdf (system-deps.txt 中列出)
 - 包含 web-search.md agent
 - opencode.json 设置 `default_agent: "plan"`
 - Python >= 3.12
@@ -123,6 +144,7 @@ oca-tool install <agent-name>
 - JS 依赖: 无（jsproject.json 中 dependencies 为空对象）
 - 空的 agents/ 目录
 - 不含 skills
+- 系统依赖: 无（system-deps.txt 为空）
 - Python >= 3.12
 
 ### pyproject.toml (this project)
