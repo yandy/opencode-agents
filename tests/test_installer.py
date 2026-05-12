@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 from pathlib import Path
@@ -80,7 +81,6 @@ class TestParseSystemDeps:
 class TestInstallIntegration:
     def test_install_office_creates_opencode_dir(self):
         import oca_tool.installer as installer_mod
-        import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
         original_ask_model = installer_mod._ask_model
@@ -114,7 +114,6 @@ class TestInstallIntegration:
                 assert skills.is_symlink()
 
                 with open(dot_opencode / "opencode.json") as f:
-                    import json
                     config = json.load(f)
                 assert config["model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
                 assert config["small_model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
@@ -127,7 +126,6 @@ class TestInstallIntegration:
 
     def test_install_research_has_web_search(self):
         import oca_tool.installer as installer_mod
-        import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
         original_ask_model = installer_mod._ask_model
@@ -145,7 +143,6 @@ class TestInstallIntegration:
                 assert (dot_opencode / "agents" / "web-search.md").is_file()
 
                 with open(dot_opencode / "opencode.json") as f:
-                    import json
                     config = json.load(f)
                 assert config["model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
                 assert "{{model}}" not in (dot_opencode / "opencode.json").read_text()
@@ -156,7 +153,6 @@ class TestInstallIntegration:
 
     def test_install_default_minimal(self):
         import oca_tool.installer as installer_mod
-        import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
         original_ask_model = installer_mod._ask_model
@@ -175,7 +171,6 @@ class TestInstallIntegration:
                 assert not (dot_opencode / "agents" / "web-search.md").exists()
 
                 with open(dot_opencode / "opencode.json") as f:
-                    import json
                     config = json.load(f)
                 assert "model" not in config
             finally:
@@ -185,7 +180,6 @@ class TestInstallIntegration:
 
     def test_install_office_without_web_search(self):
         import oca_tool.installer as installer_mod
-        import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
         original_ask_model = installer_mod._ask_model
@@ -208,7 +202,6 @@ class TestInstallIntegration:
 
     def test_install_overwrite_cancels(self):
         import oca_tool.installer as installer_mod
-        import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
         original_ask_model = installer_mod._ask_model
