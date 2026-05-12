@@ -26,8 +26,11 @@ def _confirm(prompt: str) -> bool:
 
 def _replace_model_placeholder(target_dir: Path, model: str) -> None:
     for file in target_dir.rglob("*"):
-        if file.is_file():
-            content = file.read_text(encoding="utf-8")
+        if file.is_file() and not file.is_symlink():
+            try:
+                content = file.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
             if MODEL_PLACEHOLDER in content:
                 file.write_text(content.replace(MODEL_PLACEHOLDER, model), encoding="utf-8")
 
