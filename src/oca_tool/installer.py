@@ -94,6 +94,9 @@ def install(name: str) -> None:
         print(f"拷贝模板失败: {e}", file=sys.stderr)
         sys.exit(1)
 
+    model = _ask_model()
+    _replace_model_placeholder(dot_opencode, model)
+
     try:
         pyproject_path = target / "pyproject.toml"
         if pyproject_path.exists() or pyproject_path.is_symlink():

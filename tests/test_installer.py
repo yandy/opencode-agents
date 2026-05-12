@@ -83,6 +83,8 @@ class TestInstallIntegration:
         import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
+        original_ask_model = installer_mod._ask_model
+        installer_mod._ask_model = lambda: "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
         original_cwd = os.getcwd()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -110,8 +112,17 @@ class TestInstallIntegration:
 
                 skills = dot_opencode / "skills"
                 assert skills.is_symlink()
+
+                with open(dot_opencode / "opencode.json") as f:
+                    import json
+                    config = json.load(f)
+                assert config["model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+                assert config["small_model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+                assert config["agent"]["explore"]["model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+                assert "{{model}}" not in (dot_opencode / "opencode.json").read_text()
             finally:
                 installer_mod._confirm = original_confirm
+                installer_mod._ask_model = original_ask_model
                 os.chdir(original_cwd)
 
     def test_install_research_has_web_search(self):
@@ -119,6 +130,8 @@ class TestInstallIntegration:
         import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
+        original_ask_model = installer_mod._ask_model
+        installer_mod._ask_model = lambda: "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
         original_cwd = os.getcwd()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -130,8 +143,15 @@ class TestInstallIntegration:
                 dot_opencode = Path(tmpdir) / ".opencode"
 
                 assert (dot_opencode / "agents" / "web-search.md").is_file()
+
+                with open(dot_opencode / "opencode.json") as f:
+                    import json
+                    config = json.load(f)
+                assert config["model"] == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+                assert "{{model}}" not in (dot_opencode / "opencode.json").read_text()
             finally:
                 installer_mod._confirm = original_confirm
+                installer_mod._ask_model = original_ask_model
                 os.chdir(original_cwd)
 
     def test_install_default_minimal(self):
@@ -139,6 +159,8 @@ class TestInstallIntegration:
         import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
+        original_ask_model = installer_mod._ask_model
+        installer_mod._ask_model = lambda: "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
         original_cwd = os.getcwd()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -151,8 +173,14 @@ class TestInstallIntegration:
 
                 assert dot_opencode.is_dir()
                 assert not (dot_opencode / "agents" / "web-search.md").exists()
+
+                with open(dot_opencode / "opencode.json") as f:
+                    import json
+                    config = json.load(f)
+                assert "model" not in config
             finally:
                 installer_mod._confirm = original_confirm
+                installer_mod._ask_model = original_ask_model
                 os.chdir(original_cwd)
 
     def test_install_office_without_web_search(self):
@@ -160,6 +188,8 @@ class TestInstallIntegration:
         import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
+        original_ask_model = installer_mod._ask_model
+        installer_mod._ask_model = lambda: "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
         original_cwd = os.getcwd()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -173,6 +203,7 @@ class TestInstallIntegration:
                 assert not (dot_opencode / "agents" / "web-search.md").exists()
             finally:
                 installer_mod._confirm = original_confirm
+                installer_mod._ask_model = original_ask_model
                 os.chdir(original_cwd)
 
     def test_install_overwrite_cancels(self):
@@ -180,6 +211,8 @@ class TestInstallIntegration:
         import tempfile, os
         original_confirm = installer_mod._confirm
         installer_mod._confirm = lambda prompt: False
+        original_ask_model = installer_mod._ask_model
+        installer_mod._ask_model = lambda: "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
         original_cwd = os.getcwd()
 
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -195,6 +228,7 @@ class TestInstallIntegration:
                 assert dot_opencode.stat() == first_stat
             finally:
                 installer_mod._confirm = original_confirm
+                installer_mod._ask_model = original_ask_model
                 os.chdir(original_cwd)
 
 
