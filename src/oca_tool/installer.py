@@ -52,7 +52,7 @@ def _ask_model() -> str:
         answer = input(f"输入模型名称 [默认: {DEFAULT_MODEL}]: ").strip()
         if not answer:
             return DEFAULT_MODEL
-        if answer in ("1", "2"):
+        if answer.isdigit() and 1 <= int(answer) <= len(RECOMMENDED_MODELS):
             return RECOMMENDED_MODELS[int(answer) - 1]
         return answer
 
