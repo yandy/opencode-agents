@@ -16,9 +16,45 @@ def match_preset(name: str) -> str:
     return "default"
 
 
+MODEL_PLACEHOLDER = "{{model}}"
+
+
 def _confirm(prompt: str) -> bool:
     answer = input(f"{prompt} [y/N] ").strip().lower()
     return answer in ("y", "yes")
+
+
+def _replace_model_placeholder(target_dir: Path, model: str) -> None:
+    for file in target_dir.rglob("*"):
+        if file.is_file() and not file.is_symlink():
+            try:
+                content = file.read_text(encoding="utf-8")
+            except UnicodeDecodeError:
+                continue
+            if MODEL_PLACEHOLDER in content:
+                file.write_text(content.replace(MODEL_PLACEHOLDER, model), encoding="utf-8")
+
+
+RECOMMENDED_MODELS = [
+    "minimax-cn-coding-plan/MiniMax-M2.7-highspeed",
+    "deepseek/deepseek-v4-flash",
+]
+DEFAULT_MODEL = RECOMMENDED_MODELS[0]
+
+
+def _ask_model() -> str:
+    print()
+    print("请选择模型 (输入数字或直接输入自定义模型名称):")
+    for i, m in enumerate(RECOMMENDED_MODELS, 1):
+        label = " (推荐)" if i == 1 else ""
+        print(f"  {i}. {m}{label}")
+    while True:
+        answer = input(f"输入模型名称 [默认: {DEFAULT_MODEL}]: ").strip()
+        if not answer:
+            return DEFAULT_MODEL
+        if answer.isdigit() and 1 <= int(answer) <= len(RECOMMENDED_MODELS):
+            return RECOMMENDED_MODELS[int(answer) - 1]
+        return answer
 
 
 def _parse_system_deps(conf_path: Path) -> dict[str, list[str]]:
@@ -57,6 +93,9 @@ def install(name: str) -> None:
     except Exception as e:
         print(f"拷贝模板失败: {e}", file=sys.stderr)
         sys.exit(1)
+
+    model = _ask_model()
+    _replace_model_placeholder(dot_opencode, model)
 
     try:
         pyproject_path = target / "pyproject.toml"
