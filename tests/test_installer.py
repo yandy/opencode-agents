@@ -196,3 +196,31 @@ class TestInstallIntegration:
             finally:
                 installer_mod._confirm = original_confirm
                 os.chdir(original_cwd)
+
+
+class TestReplaceModelPlaceholder:
+    def test_replaces_in_files(self, tmp_path):
+        from oca_tool.installer import _replace_model_placeholder
+        f = tmp_path / "test.json"
+        f.write_text('{"model": "{{model}}"}', encoding="utf-8")
+        _replace_model_placeholder(tmp_path, "my-model")
+        assert f.read_text(encoding="utf-8") == '{"model": "my-model"}'
+
+    def test_skips_non_matching(self, tmp_path):
+        from oca_tool.installer import _replace_model_placeholder
+        f = tmp_path / "test.json"
+        f.write_text('{"model": "fixed-model"}', encoding="utf-8")
+        _replace_model_placeholder(tmp_path, "my-model")
+        assert f.read_text(encoding="utf-8") == '{"model": "fixed-model"}'
+
+    def test_replaces_multiple_occurrences(self, tmp_path):
+        from oca_tool.installer import _replace_model_placeholder
+        f = tmp_path / "test.json"
+        f.write_text(
+            '{"model": "{{model}}", "small_model": "{{model}}"}',
+            encoding="utf-8",
+        )
+        _replace_model_placeholder(tmp_path, "my-model")
+        assert f.read_text(encoding="utf-8") == (
+            '{"model": "my-model", "small_model": "my-model"}'
+        )

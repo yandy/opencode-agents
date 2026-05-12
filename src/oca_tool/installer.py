@@ -16,9 +16,20 @@ def match_preset(name: str) -> str:
     return "default"
 
 
+MODEL_PLACEHOLDER = "{{model}}"
+
+
 def _confirm(prompt: str) -> bool:
     answer = input(f"{prompt} [y/N] ").strip().lower()
     return answer in ("y", "yes")
+
+
+def _replace_model_placeholder(target_dir: Path, model: str) -> None:
+    for file in target_dir.rglob("*"):
+        if file.is_file():
+            content = file.read_text(encoding="utf-8")
+            if MODEL_PLACEHOLDER in content:
+                file.write_text(content.replace(MODEL_PLACEHOLDER, model), encoding="utf-8")
 
 
 def _parse_system_deps(conf_path: Path) -> dict[str, list[str]]:
