@@ -5,7 +5,8 @@ from oca_tool.uninstaller import uninstall
 
 
 class TestUninstallNoEnvironment:
-    def test_no_opencode_prints_message(self, capsys):
+    def test_no_opencode_prints_message(self, tmp_path, monkeypatch, capsys):
+        monkeypatch.chdir(tmp_path)
         uninstall()
         captured = capsys.readouterr()
         assert "未找到已安装的 agent 环境" in captured.out
