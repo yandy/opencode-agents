@@ -35,6 +35,28 @@ def _replace_model_placeholder(target_dir: Path, model: str) -> None:
                 file.write_text(content.replace(MODEL_PLACEHOLDER, model), encoding="utf-8")
 
 
+RECOMMENDED_MODELS = [
+    "minimax-cn-coding-plan/MiniMax-M2.7-highspeed",
+    "deepseek/deepseek-v4-flash",
+]
+DEFAULT_MODEL = RECOMMENDED_MODELS[0]
+
+
+def _ask_model() -> str:
+    print()
+    print("请选择模型 (输入数字或直接输入自定义模型名称):")
+    for i, m in enumerate(RECOMMENDED_MODELS, 1):
+        label = " (推荐)" if i == 1 else ""
+        print(f"  {i}. {m}{label}")
+    while True:
+        answer = input(f"输入模型名称 [默认: {DEFAULT_MODEL}]: ").strip()
+        if not answer:
+            return DEFAULT_MODEL
+        if answer in ("1", "2"):
+            return RECOMMENDED_MODELS[int(answer) - 1]
+        return answer
+
+
 def _parse_system_deps(conf_path: Path) -> dict[str, list[str]]:
     deps: dict[str, list[str]] = {}
     current_section = ""

@@ -224,3 +224,26 @@ class TestReplaceModelPlaceholder:
         assert f.read_text(encoding="utf-8") == (
             '{"model": "my-model", "small_model": "my-model"}'
         )
+
+
+class TestAskModel:
+    def test_default_model(self, monkeypatch):
+        import oca_tool.installer as m
+        monkeypatch.setattr("builtins.input", lambda prompt="": "")
+        assert m._ask_model() == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+
+    def test_select_first(self, monkeypatch):
+        import oca_tool.installer as m
+        monkeypatch.setattr("builtins.input", lambda prompt="": "1")
+        assert m._ask_model() == "minimax-cn-coding-plan/MiniMax-M2.7-highspeed"
+
+    def test_select_second(self, monkeypatch):
+        import oca_tool.installer as m
+        monkeypatch.setattr("builtins.input", lambda prompt="": "2")
+        assert m._ask_model() == "deepseek/deepseek-v4-flash"
+
+    def test_custom_model(self, monkeypatch):
+        import oca_tool.installer as m
+        custom = "my-custom/model"
+        monkeypatch.setattr("builtins.input", lambda prompt="": custom)
+        assert m._ask_model() == custom
