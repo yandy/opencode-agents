@@ -97,21 +97,25 @@ class TestInstallIntegration:
 
                 assert dot_opencode.is_dir()
                 assert (dot_opencode / "opencode.json").is_file()
-                assert (dot_opencode / "agent-pyproject.toml").is_file()
-                assert (dot_opencode / "agent-package.json").is_file()
                 assert (dot_opencode / "system-deps.conf").is_file()
                 assert (dot_opencode / "skills-lock.json").is_file()
                 assert (dot_opencode / "agents").is_dir()
-                assert (dot_opencode / ".agents" / "skills").is_dir()
+
+                assert not (dot_opencode / ".agents").exists()
+                assert not (dot_opencode / "agent-pyproject.toml").exists()
+                assert not (dot_opencode / "agent-package.json").exists()
+
+                agents_dir = Path(tmpdir) / ".agents"
+                assert agents_dir.is_dir()
+                assert (agents_dir / "skills").is_dir()
 
                 pyproject = Path(tmpdir) / "pyproject.toml"
-                assert pyproject.is_symlink()
+                assert pyproject.is_file()
+                assert not pyproject.is_symlink()
 
                 package_json = Path(tmpdir) / "package.json"
-                assert package_json.is_symlink()
-
-                skills = dot_opencode / "skills"
-                assert skills.is_symlink()
+                assert package_json.is_file()
+                assert not package_json.is_symlink()
 
                 with open(dot_opencode / "opencode.json") as f:
                     config = json.load(f)

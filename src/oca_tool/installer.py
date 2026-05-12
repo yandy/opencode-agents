@@ -98,22 +98,25 @@ def install(name: str) -> None:
     _replace_model_placeholder(dot_opencode, model)
 
     try:
-        pyproject_path = target / "pyproject.toml"
-        if pyproject_path.exists() or pyproject_path.is_symlink():
-            pyproject_path.unlink()
-        pyproject_path.symlink_to(".opencode/agent-pyproject.toml")
+        agents_src = dot_opencode / ".agents"
+        agents_dst = target / ".agents"
+        if agents_dst.exists() or agents_dst.is_symlink():
+            shutil.rmtree(agents_dst)
+        shutil.move(str(agents_src), str(agents_dst))
 
-        package_json = target / "package.json"
-        if package_json.exists() or package_json.is_symlink():
-            package_json.unlink()
-        package_json.symlink_to(".opencode/agent-package.json")
+        pyproject_src = dot_opencode / "agent-pyproject.toml"
+        pyproject_dst = target / "pyproject.toml"
+        if pyproject_dst.exists() or pyproject_dst.is_symlink():
+            pyproject_dst.unlink()
+        shutil.move(str(pyproject_src), str(pyproject_dst))
 
-        skills_link = dot_opencode / "skills"
-        if skills_link.exists() or skills_link.is_symlink():
-            skills_link.unlink()
-        skills_link.symlink_to(".agents/skills/", target_is_directory=True)
+        package_src = dot_opencode / "agent-package.json"
+        package_dst = target / "package.json"
+        if package_dst.exists() or package_dst.is_symlink():
+            package_dst.unlink()
+        shutil.move(str(package_src), str(package_dst))
     except OSError as e:
-        print(f"创建符号链接失败: {e}", file=sys.stderr)
+        print(f"移动文件失败: {e}", file=sys.stderr)
         sys.exit(1)
 
     print("环境文件已创建。")
